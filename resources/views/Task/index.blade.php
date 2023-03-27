@@ -42,8 +42,11 @@ font-family: 'Raleway', sans-serif;
         <div class="modal-body">
 
 
+
                     <div class="card-body">
+                        <form>
                         <div class="form-group">
+
                             <label for="name">Title</label>
                             <input type="text" @class(['form-control','title' , 'is-invalid' => $errors->has('title')])  id="title" value="{{ old('title') }}" placeholder="Enter Title Task ">
                             @error('title')
@@ -61,7 +64,7 @@ font-family: 'Raleway', sans-serif;
                                 <option value="3">Low</option>
                               </select>
                         </div>
-
+                    </form>
 
                         <div class="modal-footer">
                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -147,9 +150,8 @@ $.ajaxSetup({
     }
 });
 $.ajax({
-
-    url:"{{ url('/task/post') }}",
-    method: 'post',
+type:'POST',
+    url:"{{route('task_store')}}",
     data: data,
     dataType: 'json',//data sending is json
     success:function(response){
