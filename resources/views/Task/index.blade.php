@@ -2,13 +2,13 @@
 @push('styles')
 <style>
     body{
-        background-color: #F0F8FF;
+        background-color:#D8BFD8 ;
     }
 #add_task{
     background-color:#b43eb4 ;
 }
 table{
-    background-color: #D8BFD8;
+    background-color: #F0F8FF;
 }
 #name_page{
    color: #452c63;
@@ -48,21 +48,23 @@ font-family: 'Raleway', sans-serif;
                         <div class="form-group">
 
                             <label for="name">Title</label>
-                            <input type="text" @class(['form-control','title' , 'is-invalid' => $errors->has('title')])  id="title" value="{{ old('title') }}" placeholder="Enter Title Task ">
-                            @error('title')
-                                <span class="invalid-feedback">
-                                    {{ $message }}
+                            <input type="text" @class(['form-control','title', ])  id="title" value="{{ old('title') }}" placeholder="Enter Title Task ">
+
+                                <span class=" text-danger error-text title_error">
+
                                 </span>
-                            @enderror
+
                         </div>
-                        <div class="form-group">
+                        <div class="form-group ">
                             <label>Select Task Priority</label>
                             <select  class="form-select priority" aria-label="Default select example">
-                                <option selected>Open this select menu</option>
-                                <option value="1">High</option>
+                                <option  value="1">High</option>
                                 <option value="2">Mid</option>
                                 <option value="3">Low</option>
                               </select>
+                              <span class="text-danger error-text priority_error ">
+
+                              </span>
                         </div>
                     </form>
 
@@ -94,11 +96,29 @@ font-family: 'Raleway', sans-serif;
                     <tr>
                         <td>{{{ $loop->iteration }}}</td>
                         <td>{{ $task->title }}</td>
-                        <td>{{ $task->priority }}</td>
+                        @if ($task->priority==1)
+                          <td class="text-success fw-bold "> High</td>
+                          @elseif ($task->priority==2)
+                          <td class="text-warning fw-bold "> Mid</td>
+                          @else
+                          <td class="text-primary fw-bold "> Low</td>
+                        @endif
                         <td>{{ $task->status }}</td>
                         <td>
                             <div class="d-flex">
+                               <!-- <button type="button" class="btn btn-sm btn-info "style="height:30px" data-toggle="modal" data-target="#exampleModalLi">Update</button>-->
 
+                                <form  >
+
+                                    <input type="button" style="margin-right: 5px" class="  text-center btn btn-sm btn-danger delete-btn p-2"style="height:30px"  data-url="{{ route('task-delete', $task->id) }}" value="Delete">
+
+                                </form>
+
+                                <form  >
+
+                                    <input type="button"  style="margin-left:5px"class="  text-center btn btn-sm btn-primary status-btn p-2"style="height:30px"  data-url="{{ route('task-status', $task->id) }}" value="Change Status">
+
+                                </form>
 
                             </div>
                         </td>
@@ -151,14 +171,77 @@ $.ajaxSetup({
 });
 $.ajax({
 type:'POST',
-    url:"{{route('task_store')}}",
+    url:"{{route('task-store')}}",
     data: data,
     dataType: 'json',//data sending is json
+    beforeSend:function(){
+        $(document).find('span.error-text').text('')
+    },
     success:function(response){
-        console.log(response);
+        if(response.status==0){
+            $.each(response.error,function(prefix,val){
+                $('span.'+prefix+'_error').text(val[0]);
+            })
+        }
+        else{
+            console.log(response);
+        $(".modal").hide();
+        window.location="{{route('task-index')}}";
+        }
+
+
     }
         });
         });
     });
 </script>
+<script>
+$(document).ready(function(){
+    $(document).on('click','.status-btn',function(e){
+e.preventDefault();
+var urlTask = $(this).data("url");
+$.ajaxSetup({
+headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+}
+});
+$.ajax({
+type:'POST',
+url:urlTask,
+dataType: 'json',//data sending is json
+success:function(response){
+    console.log(response);
+    window.location="{{route('task-index')}}";
+
+}
+    });
+    });
+});
+</script>
+<script>
+    $(document).ready(function(){
+        $(document).on('click','.delete-btn',function(e){
+    e.preventDefault();
+    var urlTask = $(this).data("url");
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+    });
+    $.ajax({
+    type:'DELETE',
+    url:urlTask,
+    dataType: 'json',//data sending is json
+    success:function(response){
+        console.log(response);
+        window.location="{{route('task-index')}}";
+
+    }
+        });
+        });
+    });
+    </script>
 @endpush
+
+
+
