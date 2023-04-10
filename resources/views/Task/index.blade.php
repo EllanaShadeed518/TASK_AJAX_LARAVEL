@@ -34,7 +34,7 @@ font-family: 'Raleway', sans-serif;
   </button></div>
   <div class="float-right">
 <form >
-<button type="button" class="search btn rounded mb-2 p-1">SEARCH</button>
+<button type="submit" class="search btn rounded mb-2 p-1">SEARCH</button>
     <input type="text"@class(['form-control' ])  id="search" >
 
     <span class=" text-danger error-text    search_error">
@@ -278,15 +278,15 @@ $.ajaxSetup({
 });
 $.ajax({
 type:'GET',
-    url:"{{route('task-search')}}",
+    url:"{{route('task-index')}}",
     data: data,
     dataType: 'json',//data sending is json
     beforeSend:function(){
-        $(document).find('span.error-text').text('');
+        //$(document).find('span.error-text').text('');
 
     },
     success:function(response){
-        if(response.status==0){
+        /*if(response.status==0){
             $.each(response.error,function(val){
                 $(' span.search_error').text(response.error.title);
             })
@@ -299,7 +299,7 @@ type:'GET',
 $('tbody ').html(response.tasks);
 
 
-        }
+        }*/
 
 
 

@@ -8,8 +8,16 @@ use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public  function index(){
-       $tasks=Task::select('*')->orderBy("priority","asc")->get();
+    public  function index(Request $request){
+
+        $query=Task::query();
+
+        if($request->has('title')){
+
+$query->where('title','like',"%{$request->get('title')}%");
+
+        }
+       $tasks=$query->orderBy("priority","asc")->get();
 
         return view('Task.index',compact('tasks'));
     }
@@ -72,7 +80,7 @@ public function change_status($id){
 }
 
 
-public function search(Request $request){
+/*public function search(Request $request){
 
     $validator=Validator::make($request->all(),[
         'title'=>'required |string|max:10',
@@ -105,7 +113,7 @@ $priority="High";
     if($task->priority==2){
         $priority="Mid";
 
-            
+
 
             }
             if($task->priority==3){
@@ -119,6 +127,7 @@ $output.='<tr>'.
 
 '<td >'.$priority.'</td>'.
 '<td>'.$task->status.'</td>'.
+'<td>'.'</td>'.
 '</tr>';
 
 
@@ -126,6 +135,6 @@ $output.='<tr>'.
 }return response()->json(['tasks'=>$output]);
 }}
 
-}}
+}}*/
 
 }
