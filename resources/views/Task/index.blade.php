@@ -4,7 +4,7 @@
     body{
         background-color:#D8BFD8 ;
     }
-#add_task{
+#add_task,.search{
     background-color:#b43eb4 ;
 }
 table{
@@ -26,9 +26,23 @@ font-family: 'Raleway', sans-serif;
 
 
 <!-- Button trigger modal -->
+
+    <div class="d-flex justify-content-between">
+    <div>
 <button type="button" id="add_task" class="btn  mt-5 mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Add Task
-  </button>
+  </button></div>
+  <div class="float-right">
+<form >
+<button type="button" class="search btn rounded mb-2 p-1">SEARCH</button>
+    <input type="text"@class(['form-control' ])  id="search" >
+
+    <span class=" text-danger error-text    search_error">
+
+    </span>
+
+</form></div>
+</div>
 
   <!-- Modal -->
   <div class="modal " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -50,7 +64,7 @@ font-family: 'Raleway', sans-serif;
                             <label for="name">Title</label>
                             <input type="text" @class(['form-control','title', ])  id="title" value="{{ old('title') }}" placeholder="Enter Title Task ">
 
-                                <span class=" text-danger error-text title_error">
+                                <span class=" text-danger error-text  title_error">
 
                                 </span>
 
@@ -91,49 +105,53 @@ font-family: 'Raleway', sans-serif;
                     <th>Operation</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody >
                 @forelse ($tasks as $task)
-                    <tr>
-                        <td>{{{ $loop->iteration }}}</td>
-                        <td>{{ $task->title }}</td>
-                        @if ($task->priority==1)
-                          <td class="text-success fw-bold "> High</td>
-                          @elseif ($task->priority==2)
-                          <td class="text-warning fw-bold "> Mid</td>
-                          @else
-                          <td class="text-primary fw-bold "> Low</td>
-                        @endif
-                        <td>{{ $task->status }}</td>
-                        <td>
-                            <div class="d-flex">
-                               <!-- <button type="button" class="btn btn-sm btn-info "style="height:30px" data-toggle="modal" data-target="#exampleModalLi">Update</button>-->
+                <tr>
+                    <td>{{{ $loop->iteration }}}</td>
+                    <td>{{ $task->title }}</td>
+                    @if ($task->priority==1)
+                      <td class="text-success fw-bold "> High</td>
+                      @elseif ($task->priority==2)
+                      <td class="text-warning fw-bold "> Mid</td>
+                      @else
+                      <td class="text-primary fw-bold "> Low</td>
+                    @endif
+                    <td>{{ $task->status }}</td>
+                    <td>
+                        <div class="d-flex">
+                           <!-- <button type="button" class="btn btn-sm btn-info "style="height:30px" data-toggle="modal" data-target="#exampleModalLi">Update</button>-->
+                            <form  >
 
-                                <form  >
+                                <input type="button" style="margin-right: 5px" class="  text-center btn btn-sm btn-danger delete-btn p-2"style="height:30px"  data-url="{{ route('task-delete', $task->id) }}" value="Delete">
 
-                                    <input type="button" style="margin-right: 5px" class="  text-center btn btn-sm btn-danger delete-btn p-2"style="height:30px"  data-url="{{ route('task-delete', $task->id) }}" value="Delete">
+                            </form>
 
-                                </form>
+                            <form  >
 
-                                <form  >
+                                <input type="button"  style="margin-left:5px"class="  text-center btn btn-sm btn-primary status-btn p-2"style="height:30px"  data-url="{{ route('task-status', $task->id) }}" value="Change Status">
 
-                                    <input type="button"  style="margin-left:5px"class="  text-center btn btn-sm btn-primary status-btn p-2"style="height:30px"  data-url="{{ route('task-status', $task->id) }}" value="Change Status">
+                            </form>
 
-                                </form>
-
-                            </div>
-                        </td>
-                    </tr>
-
+                        </div>
+                    </td>
+                </tr>
 
 
-                @empty
-                    <tr>
-                        <th colspan="5" class="text-center">
-                            There isn't any task yet
-                        </th>
-                    </tr>
-                @endforelse
+
+            @empty
+                <tr>
+                    <th colspan="5" class="text-center">
+                        There isn't any task yet
+                    </th>
+                </tr>
+            @endforelse
+
+
+
             </tbody>
+
+
         </table>
     </div>
 </div>
@@ -241,6 +259,56 @@ success:function(response){
         });
     });
     </script>
+
+
+<script>
+    $(document).ready(function(){
+        $(document).on('click','.search',function(e){
+e.preventDefault();
+var data ={
+    'title':$('#search').val(),
+
+
+}
+
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+$.ajax({
+type:'GET',
+    url:"{{route('task-search')}}",
+    data: data,
+    dataType: 'json',//data sending is json
+    beforeSend:function(){
+        $(document).find('span.error-text').text('');
+
+    },
+    success:function(response){
+        if(response.status==0){
+            $.each(response.error,function(val){
+                $(' span.search_error').text(response.error.title);
+            })
+        }
+        else{
+
+
+
+          console.log(response);
+$('tbody ').html(response.tasks);
+
+
+        }
+
+
+
+    }
+        });
+        });
+    });
+
+</script>
 @endpush
 
 

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 class TaskController extends Controller
 {
     public  function index(){
-        $tasks=Task::select('*')->orderBy("priority","asc")->get();
+       $tasks=Task::select('*')->orderBy("priority","asc")->get();
 
         return view('Task.index',compact('tasks'));
     }
@@ -70,5 +70,62 @@ public function change_status($id){
     return response()->json(['msg'=>"task change-status succsesfully",
     "tasks"=>$task,]);
 }
+
+
+public function search(Request $request){
+
+    $validator=Validator::make($request->all(),[
+        'title'=>'required |string|max:10',
+
+
+    ]);
+
+    if($validator->fails()){
+        return response()->json(['status'=>0,'error'=>$validator->errors()->toArray(),
+
+
+    ]);
+        }
+        else{
+
+            if($request->ajax())
+{
+$output="";
+$loop=0;
+$priority="";
+$tasks= Task::where('title','LIKE','%'.$request->title.'%')->get();
+
+if($tasks)
+{
+foreach ($tasks as $task) {
+    $loop++;
+    if($task->priority==1){
+$priority="High";
+    }
+    if($task->priority==2){
+        $priority="Mid";
+
+            
+
+            }
+            if($task->priority==3){
+                $priority="Low";
+                    }
+
+$output.='<tr>'.
+'<td>'.$loop.'</td>'.
+'<td>'.$task->title.'</td>'.
+
+
+'<td >'.$priority.'</td>'.
+'<td>'.$task->status.'</td>'.
+'</tr>';
+
+
+
+}return response()->json(['tasks'=>$output]);
+}}
+
+}}
 
 }
