@@ -10,14 +10,8 @@ class TaskController extends Controller
 {
     public  function index(Request $request){
 
-        $query=Task::query();
-
-        if($request->has('title')){
-
-$query->where('title','like',"%{$request->get('title')}%");
-
-        }
-       $tasks=$query->orderBy("priority","asc")->get();
+        
+       $tasks=Task::select('*')->orderBy("priority","desc")->get();
 
         return view('Task.index',compact('tasks'));
     }
@@ -80,7 +74,7 @@ public function change_status($id){
 }
 
 
-/*public function search(Request $request){
+public function search(Request $request){
 
     $validator=Validator::make($request->all(),[
         'title'=>'required |string|max:10',
@@ -135,6 +129,6 @@ $output.='<tr>'.
 }return response()->json(['tasks'=>$output]);
 }}
 
-}}*/
+}}
 
 }

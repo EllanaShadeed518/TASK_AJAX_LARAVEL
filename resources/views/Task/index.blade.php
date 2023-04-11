@@ -278,15 +278,15 @@ $.ajaxSetup({
 });
 $.ajax({
 type:'GET',
-    url:"{{route('task-index')}}",
+    url:"{{route('task-search')}}",
     data: data,
     dataType: 'json',//data sending is json
     beforeSend:function(){
-        //$(document).find('span.error-text').text('');
+        $(document).find('span.error-text').text('');
 
     },
     success:function(response){
-        /*if(response.status==0){
+        if(response.status==0){
             $.each(response.error,function(val){
                 $(' span.search_error').text(response.error.title);
             })
@@ -299,7 +299,7 @@ type:'GET',
 $('tbody ').html(response.tasks);
 
 
-        }*/
+        }
 
 
 
